@@ -59,8 +59,6 @@ function ListaGols() {
 
   return (
     <div className="container">
-      <h1 className="title">Calote FC</h1>
-      
       <div className="card">
         <form onSubmit={handlePlayerAdd} className="player-form">
           <input 
@@ -76,9 +74,17 @@ function ListaGols() {
         </form>
 
         <ul className="player-list">
-          {sortedPlayers.map((player) => (
+          {sortedPlayers.map((player, index) => (
             <li key={player.id} className="player-item">
               <div className="player-bg">
+                {index < 3 && (
+                    <div className={`rank-badge rank-${index + 1}`}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="8" r="7"></circle>
+                          <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+                        </svg>
+                    </div>
+                )}
                 <div className="goals-control" style={{ marginRight: '1rem', background: 'var(--neo-yellow)' }}>
                     <span className="goals-count">{player.goals}</span>
                 </div>
