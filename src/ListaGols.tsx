@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import './ListaGols.css'
+import { ModalAddGoals } from './ModalAddGoals'
+import { ModalRemovePlayer } from './ModalRemovePlayer'
 
 interface Player {
   id: string
@@ -11,6 +13,7 @@ function ListaGols() {
   const [players, setPlayers] = useState<Player[]>([])
   const [playerName, setPlayerName] = useState('')
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
+  const [playerToRemove, setPlayerToRemove] = useState<Player | null>(null)
 
   const handlePlayerAdd = (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,37 +29,35 @@ function ListaGols() {
     setPlayerName('')
   }
 
-  const handleRemovePlayer = (id: string) => {
-    setPlayers(players.filter(player => player.id !== id))
+  const confirmRemovePlayer = () => {
+    if (playerToRemove) {
+        setPlayers(players.filter(p => p.id !== playerToRemove.id))
+        setPlayerToRemove(null)
+    }
   }
 
-  const openEditModal = (player: Player) => {
-    setEditingPlayer({ ...player })
-  }
-
-  const closeEditModal = () => {
-    setEditingPlayer(null)
-  }
-
-  const savePlayerGoals = () => {
+  const savePlayerGoals = (goals: number) => {
     if (!editingPlayer) return
     
     setPlayers(players.map(p => 
-      p.id === editingPlayer.id ? editingPlayer : p
+      p.id === editingPlayer.id ? { ...p, goals } : p
     ))
-    closeEditModal()
-  }
-
-  const updateEditingGoals = (delta: number) => {
-    if (!editingPlayer) return
-    setEditingPlayer({
-      ...editingPlayer,
-      goals: Math.max(0, editingPlayer.goals + delta)
-    })
+    setEditingPlayer(null)
   }
 
   const sortedPlayers = [...players].sort((a, b) => b.goals - a.goals)
 
+  if (playerToRemove) return <ModalRemovePlayer
+    cancelRemovePlayer={() => setPlayerToRemove(null)}
+    confirmRemovePlayer={confirmRemovePlayer}
+    playerToRemove={playerToRemove}
+  />
+  if (editingPlayer) return <ModalAddGoals
+    closeEditModal={() => setEditingPlayer(null)}
+    editingPlayer={editingPlayer}
+    savePlayerGoals={savePlayerGoals}
+  />
+  
   return (
     <div className="container">
       <div className="card">
@@ -93,14 +94,14 @@ function ListaGols() {
               
               <div className="actions">
                 <button 
-                  onClick={() => openEditModal(player)}
+                  onClick={() => setEditingPlayer(player)}
                   className="neobrutal-btn edit"
                 >
                   Gols
                 </button>
 
                 <button 
-                  onClick={() => handleRemovePlayer(player.id)}
+                  onClick={() => setPlayerToRemove(player)}
                   className="neobrutal-btn icon-btn delete"
                   aria-label="Remover jogador"
                   title="Remover jogador"
@@ -120,43 +121,6 @@ function ListaGols() {
           )}
         </ul>
       </div>
-
-      {editingPlayer && (
-        <div className="modal-overlay" onClick={closeEditModal}>
-          <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <div className="modal-header">
-              <h2>{editingPlayer.name}</h2>
-            </div>
-            
-            <div className="modal-body">
-              <div className="modal-goals-control">
-                <button 
-                  className="neobrutal-btn modal-btn-lg"
-                  onClick={() => updateEditingGoals(-1)}
-                >
-                  -
-                </button>
-                <span className="modal-goals-value">{editingPlayer.goals}</span>
-                <button 
-                  className="neobrutal-btn modal-btn-lg primary"
-                  onClick={() => updateEditingGoals(1)}
-                >
-                  +
-                </button>
-              </div>
-
-              <div className="modal-actions">
-                <button 
-                  className="neobrutal-btn save"
-                  onClick={savePlayerGoals}
-                >
-                  SALVAR
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
