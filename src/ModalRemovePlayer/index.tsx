@@ -32,7 +32,7 @@ export const ModalRemovePlayer = ({ cancelRemovePlayer, confirmRemovePlayer, pla
         <div className="modal-overlay" onClick={cancelRemovePlayer}>
             <div className="modal-content" onClick={e => e.stopPropagation()}>
                 <div className="modal-header">
-                    <h2>Faaaaaala Jogador, vai mandar de ralo o {playerToRemove.name} hoje?</h2>
+                    <h2>Faaaaaala Jogador, vai mandar de ralo o {playerToRemove.nome} hoje?</h2>
                 </div>
                 <div className="modal-body">
                     <p style={{ fontSize: '1.2rem', margin: '1rem 0', textAlign: 'center' }}>

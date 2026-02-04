@@ -18,7 +18,7 @@ export const ModalAddGoals = ({ closeEditModal, editingPlayer, savePlayerGoals }
         <div className="modal-overlay" onClick={closeEditModal}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{editingPlayer.name}</h2>
+              <h2>{editingPlayer.nome}</h2>
             </div>
             
             <div className="modal-body">

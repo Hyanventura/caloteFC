@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import './ListaGols.css'
 import { ModalAddGoals } from './ModalAddGoals'
 import { ModalRemovePlayer } from './ModalRemovePlayer'
+import api from './services/api'
 
 interface Player {
   id: string
-  name: string
+  nome: string
   goals: number
 }
 
@@ -14,14 +15,27 @@ function ListaGols() {
   const [playerName, setPlayerName] = useState('')
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null)
   const [playerToRemove, setPlayerToRemove] = useState<Player | null>(null)
+  const [loading, setLoading] = useState(false)
 
+  const getPlayers = useCallback(async () => {
+    try {
+      setLoading(true)
+      const { data } = await api.get<Player[]>('/api/v1/players')
+      setPlayers(data)
+      setLoading(false)
+    } catch (error) {
+      setLoading(false)
+      console.error('Erro ao buscar jogadores:', error)
+    }
+    
+  }, [])
+  
   const handlePlayerAdd = (e: React.FormEvent) => {
     e.preventDefault()
     if (!playerName.trim()) return
 
     const newPlayer: Player = {
-      id: crypto.randomUUID(),
-      name: playerName,
+      nome: playerName,
       goals: 0
     }
 
@@ -46,6 +60,10 @@ function ListaGols() {
   }
 
   const sortedPlayers = [...players].sort((a, b) => b.goals - a.goals)
+
+  useEffect(() => {
+    getPlayers()
+  }, [])
 
   if (playerToRemove) return <ModalRemovePlayer
     cancelRemovePlayer={() => setPlayerToRemove(null)}
@@ -89,7 +107,7 @@ function ListaGols() {
                 <div className="goals-control" style={{ marginRight: '1rem', background: 'var(--neo-yellow)' }}>
                     <span className="goals-count">{player.goals}</span>
                 </div>
-                <span className="player-name">{player.name}</span>
+                <span className="player-name">{player.nome}</span>
               </div>
               
               <div className="actions">
